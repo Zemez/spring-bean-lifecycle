@@ -1,6 +1,7 @@
 package com.example.spring_bean_lifecycle;
 
 import com.example.spring_bean_lifecycle.annotation.BeanDestroy;
+import com.example.spring_bean_lifecycle.annotation.BeanFactory;
 import com.example.spring_bean_lifecycle.annotation.BeanInit;
 import lombok.SneakyThrows;
 import org.slf4j.Logger;
@@ -19,7 +20,6 @@ public class BeanLifeBeanFactoryPostProcessor implements BeanFactoryPostProcesso
 
     private static final Logger logger = LoggerFactory.getLogger(BeanLifeBeanFactoryPostProcessor.class);
     private static final String BEAN_LIFE = StringUtils.uncapitalize(BeanLifeComponent.class.getSimpleName());
-    private static final String FACTORY_METHOD = "factory";
 
     public BeanLifeBeanFactoryPostProcessor() {
         logPhase("construct");
@@ -41,7 +41,7 @@ public class BeanLifeBeanFactoryPostProcessor implements BeanFactoryPostProcesso
                 Class<?> beanClass = Class.forName(beanClassName);
                 for (Method method : beanClass.getDeclaredMethods()) {
                     String methodName = method.getName();
-                    if (methodName.equals(FACTORY_METHOD)) {
+                    if (method.isAnnotationPresent(BeanFactory.class)) {
                         beanDefinition.setFactoryMethodName(methodName);
                         logPhase(beanDefinitionName + ": set factory method");
                     } else if (method.isAnnotationPresent(BeanInit.class)) {

@@ -33,6 +33,7 @@ public class BeanLifeComponent implements InitializingBean, DisposableBean {
         logPhase("construct");
     }
 
+    @BeanFactory
     public static BeanLifeComponent factory() {
         phase = 0;
         logPhase("bean definition factory method");
