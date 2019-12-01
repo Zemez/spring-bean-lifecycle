@@ -23,7 +23,7 @@ public class BeanLifeDestructionAwareBeanPostProcessor implements DestructionAwa
     }
 
     private void logPhase(String str) {
-        logger.warn("Destruct: {}", str);
+        logger.warn("Destruction: {}", str);
     }
 
 }

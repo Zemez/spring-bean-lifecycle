@@ -38,13 +38,18 @@ public class BeanLifeComponent implements InitializingBean, DisposableBean {
         logPhase("after properties set");
     }
 
+    @Init
+    public void beanDefinitionInit() {
+        logPhase("bean definition init");
+    }
+
     @EventListener(ContextRefreshedEvent.class)
-    public void refreshed() {
+    public void refreshedEvent() {
         logPhase("context refreshed event");
     }
 
     @EventListener(ContextClosedEvent.class)
-    public void closed() {
+    public void closedEvent() {
         logPhase("context closed event");
     }
 
@@ -56,6 +61,11 @@ public class BeanLifeComponent implements InitializingBean, DisposableBean {
     @Override
     public void destroy() {
         logPhase("destroy");
+    }
+
+    @Destroy
+    public void beanDefinitionDestroy() {
+        logPhase("bean definition destroy");
     }
 
     private void logPhase(String str) {

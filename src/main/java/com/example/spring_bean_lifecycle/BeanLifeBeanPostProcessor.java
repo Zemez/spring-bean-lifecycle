@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 public class BeanLifeBeanPostProcessor implements BeanPostProcessor {
 
     private static final Logger logger = LoggerFactory.getLogger(BeanLifeBeanPostProcessor.class);
+    private static final String CUSTOM_BEAN = BeanLifeComponent.class.getSimpleName();
 
     public BeanLifeBeanPostProcessor() {
         logPhase("construct");
@@ -17,7 +18,7 @@ public class BeanLifeBeanPostProcessor implements BeanPostProcessor {
 
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-        if (beanName.equals("beanLifeComponent")) {
+        if (beanName.equals(CUSTOM_BEAN)) {
             logPhase("before initialization");
         }
         return bean;
@@ -25,14 +26,14 @@ public class BeanLifeBeanPostProcessor implements BeanPostProcessor {
 
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-        if (beanName.equals("beanLifeComponent")) {
+        if (beanName.equals(CUSTOM_BEAN)) {
             logPhase("after initialization");
         }
         return bean;
     }
 
     private void logPhase(String str) {
-        logger.warn("Configure: {}", str);
+        logger.warn("Configuration: {}", str);
     }
 
 }
