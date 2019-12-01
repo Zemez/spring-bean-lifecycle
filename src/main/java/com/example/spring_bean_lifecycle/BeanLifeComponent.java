@@ -8,7 +8,6 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
@@ -19,14 +18,25 @@ import javax.annotation.PreDestroy;
 
 @Data
 @Component
-//@Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE, proxyMode = ScopedProxyMode.DEFAULT)
+//@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class BeanLifeComponent implements InitializingBean, DisposableBean {
 
     private static final Logger logger = LoggerFactory.getLogger(BeanLifeComponent.class);
-    private int phase = 0;
+    private static int phase;
 
-    public BeanLifeComponent() {
+    public static BeanLifeComponent factoryBean() {
+        logPhase("bean definition factory bean");
+        return new BeanLifeComponent();
+    }
+
+    private BeanLifeComponent() {
         logPhase("construct");
+    }
+
+    public static BeanLifeComponent factory() {
+        logPhase("bean definition factory method");
+        phase = 0;
+        return new BeanLifeComponent();
     }
 
     @BeforeInit
@@ -66,7 +76,7 @@ public class BeanLifeComponent implements InitializingBean, DisposableBean {
 
     @BeforeDestroy
     public void beforeDestroy() {
-        logPhase("before destroy");
+        logPhase("before destroy post process");
     }
 
     @PreDestroy
@@ -84,7 +94,7 @@ public class BeanLifeComponent implements InitializingBean, DisposableBean {
         logPhase("bean definition destroy");
     }
 
-    private void logPhase(String str) {
+    private static void logPhase(String str) {
         logger.warn("Life phase {}: {}", ++phase, str);
     }
 

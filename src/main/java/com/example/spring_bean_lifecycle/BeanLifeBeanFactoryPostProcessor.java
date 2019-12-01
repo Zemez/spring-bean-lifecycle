@@ -10,6 +10,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Method;
 
@@ -17,6 +18,8 @@ import java.lang.reflect.Method;
 public class BeanLifeBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
 
     private static final Logger logger = LoggerFactory.getLogger(BeanLifeBeanFactoryPostProcessor.class);
+    private static final String BEAN_LIFE = StringUtils.uncapitalize(BeanLifeComponent.class.getSimpleName());
+    private static final String FACTORY_METHOD = "factory";
 
     public BeanLifeBeanFactoryPostProcessor() {
         logPhase("construct");
@@ -28,16 +31,24 @@ public class BeanLifeBeanFactoryPostProcessor implements BeanFactoryPostProcesso
         logPhase("process");
         for (String beanDefinitionName : beanFactory.getBeanDefinitionNames()) {
             BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanDefinitionName);
+/*
+            if (beanDefinitionName.equals(BEAN_LIFE)) {
+                beanDefinition.setFactoryBeanName(BEAN_LIFE + "Factory");
+            }
+*/
             String beanClassName = beanDefinition.getBeanClassName();
             if (beanClassName != null) {
                 Class<?> beanClass = Class.forName(beanClassName);
                 for (Method method : beanClass.getDeclaredMethods()) {
-                    if (method.isAnnotationPresent(BeanInit.class)) {
-                        beanDefinition.setInitMethodName(method.getName());
+                    String methodName = method.getName();
+                    if (methodName.equals(FACTORY_METHOD)) {
+                        beanDefinition.setFactoryMethodName(methodName);
+                        logPhase(beanDefinitionName + ": set factory method");
+                    } else if (method.isAnnotationPresent(BeanInit.class)) {
+                        beanDefinition.setInitMethodName(methodName);
                         logPhase(beanDefinitionName + ": set init method");
-                    }
-                    if (method.isAnnotationPresent(BeanDestroy.class)) {
-                        beanDefinition.setDestroyMethodName(method.getName());
+                    } else if (method.isAnnotationPresent(BeanDestroy.class)) {
+                        beanDefinition.setDestroyMethodName(methodName);
                         logPhase(beanDefinitionName + ": set destroy method");
                     }
                 }

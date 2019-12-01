@@ -1,12 +1,13 @@
 package com.example.spring_bean_lifecycle;
 
 import com.example.spring_bean_lifecycle.annotation.AfterInit;
+import com.example.spring_bean_lifecycle.annotation.BeforeDestroy;
 import com.example.spring_bean_lifecycle.annotation.BeforeInit;
 import com.example.spring_bean_lifecycle.util.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.beans.factory.config.DestructionAwareBeanPostProcessor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -14,7 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
-public class BeanLifeBeanPostProcessor implements BeanPostProcessor {
+public class BeanLifeBeanPostProcessor implements DestructionAwareBeanPostProcessor {
 
     private static final Logger logger = LoggerFactory.getLogger(BeanLifeBeanPostProcessor.class);
     private static final String BEAN_LIFE = StringUtils.uncapitalize(BeanLifeComponent.class.getSimpleName());
@@ -46,8 +47,17 @@ public class BeanLifeBeanPostProcessor implements BeanPostProcessor {
         return bean;
     }
 
+    @Override
+    public void postProcessBeforeDestruction(Object bean, String beanName) throws BeansException {
+        if (beanName.equals(BEAN_LIFE)) {
+            logPhase("before destruction");
+            Class<?> beanClass = beanClassMap.get(beanName);
+            BeanUtils.invokeAnnotatedMethod(bean, beanClass, BeforeDestroy.class);
+        }
+    }
+
     private void logPhase(String str) {
-        logger.debug("Configuration: {}", str);
+        logger.debug("PostProcessor: {}", str);
     }
 
 }
