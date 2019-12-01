@@ -1,5 +1,6 @@
 package com.example.spring_bean_lifecycle;
 
+import com.example.spring_bean_lifecycle.annotation.*;
 import lombok.Data;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +29,11 @@ public class BeanLifeComponent implements InitializingBean, DisposableBean {
         logPhase("construct");
     }
 
+    @BeforeInit
+    public void beforeInit() {
+        logPhase("before init post process");
+    }
+
     @PostConstruct
     public void postConstruct() {
         logPhase("post construct");
@@ -38,9 +44,14 @@ public class BeanLifeComponent implements InitializingBean, DisposableBean {
         logPhase("after properties set");
     }
 
-    @Init
-    public void beanDefinitionInit() {
+    @BeanInit
+    public void beanInit() {
         logPhase("bean definition init");
+    }
+
+    @AfterInit
+    public void afterInit() {
+        logPhase("after init post process");
     }
 
     @EventListener(ContextRefreshedEvent.class)
@@ -53,6 +64,11 @@ public class BeanLifeComponent implements InitializingBean, DisposableBean {
         logPhase("context closed event");
     }
 
+    @BeforeDestroy
+    public void beforeDestroy() {
+        logPhase("before destroy");
+    }
+
     @PreDestroy
     public void preDestroy() {
         logPhase("pre destroy");
@@ -63,8 +79,8 @@ public class BeanLifeComponent implements InitializingBean, DisposableBean {
         logPhase("destroy");
     }
 
-    @Destroy
-    public void beanDefinitionDestroy() {
+    @BeanDestroy
+    public void beanDestroy() {
         logPhase("bean definition destroy");
     }
 

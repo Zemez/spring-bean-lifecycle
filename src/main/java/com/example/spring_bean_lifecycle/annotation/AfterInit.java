@@ -1,4 +1,4 @@
-package com.example.spring_bean_lifecycle;
+package com.example.spring_bean_lifecycle.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -7,5 +7,5 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Init {
+public @interface AfterInit {
 }

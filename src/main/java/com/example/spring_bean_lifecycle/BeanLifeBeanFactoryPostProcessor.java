@@ -1,5 +1,7 @@
 package com.example.spring_bean_lifecycle;
 
+import com.example.spring_bean_lifecycle.annotation.BeanDestroy;
+import com.example.spring_bean_lifecycle.annotation.BeanInit;
 import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,13 +30,13 @@ public class BeanLifeBeanFactoryPostProcessor implements BeanFactoryPostProcesso
             BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanDefinitionName);
             String beanClassName = beanDefinition.getBeanClassName();
             if (beanClassName != null) {
-                Class<?> clazz = Class.forName(beanClassName);
-                for (Method method : clazz.getDeclaredMethods()) {
-                    if (method.isAnnotationPresent(Init.class)) {
+                Class<?> beanClass = Class.forName(beanClassName);
+                for (Method method : beanClass.getDeclaredMethods()) {
+                    if (method.isAnnotationPresent(BeanInit.class)) {
                         beanDefinition.setInitMethodName(method.getName());
                         logPhase(beanDefinitionName + ": set init method");
                     }
-                    if (method.isAnnotationPresent(Destroy.class)) {
+                    if (method.isAnnotationPresent(BeanDestroy.class)) {
                         beanDefinition.setDestroyMethodName(method.getName());
                         logPhase(beanDefinitionName + ": set destroy method");
                     }
@@ -44,7 +46,7 @@ public class BeanLifeBeanFactoryPostProcessor implements BeanFactoryPostProcesso
     }
 
     private void logPhase(String str) {
-        logger.warn("Definition: {}", str);
+        logger.debug("Definition: {}", str);
     }
 
 }
